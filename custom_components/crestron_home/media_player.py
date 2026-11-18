@@ -13,10 +13,11 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import CrestronHomeError
+from .const import CONF_VOLUME_SCALE, DEFAULT_VOLUME_SCALE, VOLUME_SCALE_PERCENT
 from .coordinator import CrestronHomeCoordinator
 from .entity import CrestronHomeEntity
 
-# Volume is 0-65535 both when reported and when set.
+# Volume is always reported as 0-65535; the scale used to set it is an option.
 MAX_LEVEL = 65535
 
 
@@ -110,8 +111,11 @@ class CrestronHomeMediaRoom(CrestronHomeEntity, MediaPlayerEntity):
         await self._run(self.coordinator.client.media_select_source(self._item_id, self._sources[source]))
 
     async def async_set_volume_level(self, volume: float) -> None:
-        level = round(max(0.0, min(1.0, volume)) * MAX_LEVEL)
-        await self._run(self.coordinator.client.media_volume(self._item_id, level))
+        volume = max(0.0, min(1.0, volume))
+        level = round(volume * MAX_LEVEL)
+        scale = self.coordinator.config_entry.options.get(CONF_VOLUME_SCALE, DEFAULT_VOLUME_SCALE)
+        sent = round(volume * 100) if scale == VOLUME_SCALE_PERCENT else level
+        await self._run(self.coordinator.client.media_volume(self._item_id, sent))
         if self._item is not None:
             self._item["currentVolumeLevel"] = level  # optimistic, so rapid taps keep stepping
             self.async_write_ha_state()

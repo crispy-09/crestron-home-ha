@@ -23,7 +23,10 @@ Not included yet: shades, thermostats, and security. Shades and thermostats are 
    (Or copy `custom_components/crestron_home` into `/config/custom_components/` by hand.)
 3. **Settings → Devices & services → Add integration → Crestron Home**, then enter the processor IP and token.
 
-Polling interval defaults to 5 s (**Configure** on the integration to change it).
+**Configure** on the integration lets you change:
+
+- **Polling interval** (default 5 s).
+- **Media room volume scale**: how your processor expects volume to be *set*. Crestron's API docs say 0–100 percent, but processors like the MC4-R take 0–65535 (the scale they report). The default is 0–65535. If volume up jumps to silent, switch it.
 
 **Firmware updates can reset the token.** If that happens, HA will prompt you to re-authenticate with the new token.
 

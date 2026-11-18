@@ -11,9 +11,19 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResu
 from homeassistant.const import CONF_HOST, CONF_TOKEN
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig, SelectSelectorMode
 
 from .api import CrestronHomeAuthError, CrestronHomeClient, CrestronHomeError
-from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, MIN_SCAN_INTERVAL
+from .const import (
+    CONF_SCAN_INTERVAL,
+    CONF_VOLUME_SCALE,
+    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_VOLUME_SCALE,
+    DOMAIN,
+    MIN_SCAN_INTERVAL,
+    VOLUME_SCALE_PERCENT,
+    VOLUME_SCALE_RAW,
+)
 
 
 class CrestronHomeConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -76,14 +86,23 @@ class CrestronHomeOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
             return self.async_create_entry(data=user_input)
-        current = self.config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        opts = self.config_entry.options
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_SCAN_INTERVAL, default=current): vol.All(
-                        vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=300)
-                    )
+                    vol.Required(
+                        CONF_SCAN_INTERVAL, default=opts.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+                    ): vol.All(vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=300)),
+                    vol.Required(
+                        CONF_VOLUME_SCALE, default=opts.get(CONF_VOLUME_SCALE, DEFAULT_VOLUME_SCALE)
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[VOLUME_SCALE_RAW, VOLUME_SCALE_PERCENT],
+                            translation_key=CONF_VOLUME_SCALE,
+                            mode=SelectSelectorMode.LIST,
+                        )
+                    ),
                 }
             ),
         )

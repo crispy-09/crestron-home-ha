@@ -119,10 +119,9 @@ class CrestronHomeClient:
     async def media_power(self, room_id: int, on: bool) -> None:
         await self._request("POST", f"/mediarooms/{room_id}/power/{'on' if on else 'off'}")
 
-    async def media_volume(self, room_id: int, level: int) -> None:
-        # Crestron's docs say 0-100 percent, but processors (e.g. MC4-R fw 2.8000) take the
-        # same 0-65535 scale they report in currentVolumeLevel. Sending percent sets ~0.
-        await self._request("POST", f"/mediarooms/{room_id}/volume/{max(0, min(65535, int(level)))}")
+    async def media_volume(self, room_id: int, value: int) -> None:
+        """Send a raw volume value; the caller picks the scale (see CONF_VOLUME_SCALE)."""
+        await self._request("POST", f"/mediarooms/{room_id}/volume/{max(0, int(value))}")
 
     async def media_mute(self, room_id: int, mute: bool) -> None:
         await self._request("POST", f"/mediarooms/{room_id}/{'mute' if mute else 'unmute'}")

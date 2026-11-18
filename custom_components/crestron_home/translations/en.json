@@ -31,8 +31,20 @@
       "init": {
         "title": "Crestron Home options",
         "data": {
-          "scan_interval": "Polling interval (seconds)"
+          "scan_interval": "Polling interval (seconds)",
+          "volume_scale": "Media room volume scale"
+        },
+        "data_description": {
+          "volume_scale": "How your processor expects volume to be set. If volume up jumps to silent, switch this."
         }
+      }
+    }
+  },
+  "selector": {
+    "volume_scale": {
+      "options": {
+        "raw": "0–65535 (default; confirmed on MC4-R)",
+        "percent": "0–100 percent (as in Crestron's API docs)"
       }
     }
   }
