@@ -36,6 +36,15 @@ class CrestronHomeMediaRoom(CrestronHomeEntity, MediaPlayerEntity):
     def __init__(self, coordinator: CrestronHomeCoordinator, room_id: int) -> None:
         super().__init__(coordinator, "media", room_id)
         item = coordinator.data.media[room_id]
+        info = self._device_info_for(item, "Media room")
+        info["name"] = f"{item.get('name')} Media"
+        self._attr_device_info = info
+
+    @property
+    def supported_features(self) -> MediaPlayerEntityFeature:
+        # Crestron only reports volume/mute controls while a source is active
+        # (e.g. a receiver behind the source), so evaluate this on every update.
+        item = self._item or {}
         features = (
             MediaPlayerEntityFeature.TURN_ON
             | MediaPlayerEntityFeature.TURN_OFF
@@ -45,10 +54,7 @@ class CrestronHomeMediaRoom(CrestronHomeEntity, MediaPlayerEntity):
             features |= MediaPlayerEntityFeature.VOLUME_SET | MediaPlayerEntityFeature.VOLUME_STEP
         if _has(item.get("availableMuteControls")):
             features |= MediaPlayerEntityFeature.VOLUME_MUTE
-        self._attr_supported_features = features
-        info = self._device_info_for(item, "Media room")
-        info["name"] = f"{item.get('name')} Media"
-        self._attr_device_info = info
+        return features
 
     @property
     def _sources(self) -> dict[str, int]:
