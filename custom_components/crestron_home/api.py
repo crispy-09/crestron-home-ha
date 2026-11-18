@@ -103,7 +103,28 @@ class CrestronHomeClient:
         except CrestronHomeError:
             return []  # older firmware may not expose this endpoint
 
+    async def get_media_rooms(self) -> list[dict]:
+        try:
+            return (await self._request("GET", "/mediarooms")).get("mediaRooms", [])
+        except CrestronHomeAuthError:
+            raise
+        except CrestronHomeError:
+            return []
+
     # --- commands ----------------------------------------------------------
+
+    async def media_select_source(self, room_id: int, source_id: int) -> None:
+        await self._request("POST", f"/mediarooms/{room_id}/selectsource/{source_id}")
+
+    async def media_power(self, room_id: int, on: bool) -> None:
+        await self._request("POST", f"/mediarooms/{room_id}/power/{'on' if on else 'off'}")
+
+    async def media_volume(self, room_id: int, percent: int) -> None:
+        await self._request("POST", f"/mediarooms/{room_id}/volume/{max(0, min(100, int(percent)))}")
+
+    async def media_mute(self, room_id: int, mute: bool) -> None:
+        await self._request("POST", f"/mediarooms/{room_id}/{'mute' if mute else 'unmute'}")
+
 
     async def set_light_level(self, light_id: int, level: int, fade_ms: int = 0) -> None:
         level = max(0, min(65535, int(level)))

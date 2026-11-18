@@ -11,4 +11,4 @@ MIN_SCAN_INTERVAL = 2
 # or the Crestron app ran it). Use it as an automation trigger.
 EVENT_SCENE_ACTIVATED = f"{DOMAIN}_scene_activated"
 
-PLATFORMS = ["light", "lock", "scene"]
+PLATFORMS = ["light", "lock", "media_player", "scene"]

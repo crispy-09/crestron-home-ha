@@ -23,6 +23,7 @@ class CrestronHomeData:
     lights: dict[int, dict] = field(default_factory=dict)
     scenes: dict[int, dict] = field(default_factory=dict)
     locks: dict[int, dict] = field(default_factory=dict)
+    media: dict[int, dict] = field(default_factory=dict)
 
 
 class CrestronHomeCoordinator(DataUpdateCoordinator[CrestronHomeData]):
@@ -48,6 +49,7 @@ class CrestronHomeCoordinator(DataUpdateCoordinator[CrestronHomeData]):
             lights = await self.client.get_lights()
             scenes = await self.client.get_scenes()
             locks = await self.client.get_door_locks()
+            media = await self.client.get_media_rooms()
         except CrestronHomeAuthError as err:
             raise ConfigEntryAuthFailed(
                 "Crestron Home rejected the API token. Firmware updates can reset it; "
@@ -61,6 +63,7 @@ class CrestronHomeCoordinator(DataUpdateCoordinator[CrestronHomeData]):
             lights={x["id"]: x for x in lights},
             scenes={x["id"]: x for x in scenes},
             locks={x["id"]: x for x in locks},
+            media={x["id"]: x for x in media},
         )
 
         # Fire an event for every scene that just became active.

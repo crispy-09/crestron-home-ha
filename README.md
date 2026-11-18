@@ -8,12 +8,13 @@ Local control of a **Crestron Home** processor (e.g. MC4-R, CP4-R) through its b
 |---|---|---|
 | Lights (dimmers, switches) | `light` | Brightness and transition for dimmers. Unavailable when Crestron reports the device offline. |
 | Door locks | `lock` | Lock/unlock. A blank Crestron status (e.g. a jammed bolt) shows as **unknown**, never as locked. |
+| Media rooms | `media_player` | Power, source selection (e.g. Apple TV / Xbox / Blu-ray), and volume/mute where Crestron controls them. |
 | Scenes | `scene` | One HA device per Crestron room. The `active` attribute mirrors Crestron's scene status. |
 | Scene activations | `crestron_home_scene_activated` event | Fired when a scene goes inactive → active, whether from a keypad, the Crestron app, or a schedule. |
 
 Rooms become HA areas automatically (suggested area on each device).
 
-Not included: media rooms (the API's media commands are undocumented, so use HA's native Sonos integration instead), shades, thermostats, and security. Shades and thermostats are easy to add if you have them.
+Not included yet: shades, thermostats, and security. Shades and thermostats are easy to add if you have them.
 
 ## Setup
 
