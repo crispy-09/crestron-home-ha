@@ -1,0 +1,39 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Crestron Home",
+        "description": "Enable the Web API in the Crestron Home setup app (Installer Settings → System Control Options → Web API Settings) and paste the REST API token.",
+        "data": {
+          "host": "Processor IP address or hostname",
+          "token": "REST API token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Crestron Home token rejected",
+        "description": "The processor no longer accepts the saved token. Firmware updates can reset it. Copy the current REST API token from the Crestron Home setup app.",
+        "data": {
+          "token": "REST API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the processor's REST API.",
+      "invalid_auth": "The processor rejected the API token."
+    },
+    "abort": {
+      "already_configured": "This processor is already configured.",
+      "reauth_successful": "Token updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Crestron Home options",
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  }
+}
