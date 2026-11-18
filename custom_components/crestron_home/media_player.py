@@ -16,7 +16,7 @@ from .api import CrestronHomeError
 from .coordinator import CrestronHomeCoordinator
 from .entity import CrestronHomeEntity
 
-# The API reports volume as 0-65535 but sets it in percent.
+# Volume is 0-65535 both when reported and when set.
 MAX_LEVEL = 65535
 
 
@@ -110,7 +110,11 @@ class CrestronHomeMediaRoom(CrestronHomeEntity, MediaPlayerEntity):
         await self._run(self.coordinator.client.media_select_source(self._item_id, self._sources[source]))
 
     async def async_set_volume_level(self, volume: float) -> None:
-        await self._run(self.coordinator.client.media_volume(self._item_id, round(volume * 100)))
+        level = round(max(0.0, min(1.0, volume)) * MAX_LEVEL)
+        await self._run(self.coordinator.client.media_volume(self._item_id, level))
+        if self._item is not None:
+            self._item["currentVolumeLevel"] = level  # optimistic, so rapid taps keep stepping
+            self.async_write_ha_state()
 
     async def async_mute_volume(self, mute: bool) -> None:
         await self._run(self.coordinator.client.media_mute(self._item_id, mute))
